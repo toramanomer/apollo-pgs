@@ -1,0 +1,24 @@
+{
+    "name": "odyssey-intro-typescript",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"tsx watch src/index.ts\" \"npm run generate\"",
+        "generate": "graphql-codegen --watch \"src/schema.graphql\""
+    },
+    "devDependencies": {
+        "@graphql-codegen/cli": "^5.0.7",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-resolvers": "^4.5.1",
+        "@types/node": "^24.0.10",
+        "concurrently": "^9.2.0",
+        "tsx": "^4.20.3",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "@apollo/datasource-rest": "^6.4.1",
+        "@apollo/server": "^4.12.2",
+        "graphql": "^16.11.0",
+        "graphql-tag": "^2.12.6"
+    }
+}
