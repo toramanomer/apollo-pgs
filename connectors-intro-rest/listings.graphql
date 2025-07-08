@@ -1,0 +1,124 @@
+extend schema
+    @link(url: "https://specs.apollo.dev/federation/v2.11", import: ["@key"])
+    @link(
+        url: "https://specs.apollo.dev/connect/v0.1"
+        import: ["@source", "@connect"]
+    )
+    @source(
+        name: "listingsAPI"
+        http: { baseURL: "https://airlock-listings.demo-api.apollo.dev" }
+    )
+
+type Query {
+    "A curated array of listings to feature on the homepage"
+    featuredListings: [Listing!]!
+        @connect(
+            source: "listingsAPI"
+            http: { GET: "/featured-listings" }
+            selection: """
+            id
+            title
+            numOfBeds
+            costPerNight
+            closedForBooking: closedForBookings
+            """
+        )
+
+    "Details about a specific listing by its ID"
+    listing(id: ID!): Listing
+        @connect(
+            source: "listingsAPI"
+            http: { GET: "/listings/{$args.id}" }
+            selection: """
+            id
+            title
+            description
+            numOfBeds
+            costPerNight
+            closedForBooking: closedForBookings
+            latitude
+            longitude
+            photoThumbnail
+            """
+            entity: true
+        )
+}
+
+"A particular intergalactic location available for booking"
+type Listing @key(fields: "id") {
+    id: ID!
+    "The listing's title"
+    title: String!
+    description: String
+    "The number of beds available"
+    numOfBeds: Int
+    "The cost per night"
+    costPerNight: Float
+    "Indicates whether listing is closed for bookings"
+    closedForBooking: Boolean
+    latitude: Float
+    longitude: Float
+    photoThumbnail: String
+    amenities: [Amenity!]!
+        @connect(
+            source: "listingsAPI"
+            http: { GET: "/listings/{$this.id}/amenities" }
+            selection: """
+            id
+            category
+            name
+            """
+        )
+}
+
+type Amenity {
+    id: ID!
+    category: String!
+    name: String!
+}
+
+input CreateListingInput {
+    title: String!
+    numOfBeds: Int!
+    costPerNight: Float!
+}
+
+type CreateListingResponse {
+    listing: Listing
+}
+
+type Mutation {
+    createListing(input: CreateListingInput!): CreateListingResponse
+        @connect(
+            source: "listingsAPI"
+            http: {
+                POST: "/listings"
+                headers: [{ name: "Api-Key", from: "Api-Key" }]
+                body: """
+                listing: {
+                    title: $args.input.title
+                    numOfBeds: $args.input.numOfBeds
+                    costPerNight: $args.input.costPerNight
+                }
+                """
+            }
+            selection: """
+            listing: {
+                id
+                title
+                description
+                numOfBeds
+                costPerNight
+                closedForBooking: closedForBookings
+                latitude
+                longitude
+                photoThumbnail
+                amenities {
+                    id
+                    category
+                    name
+                }
+            }
+            """
+        )
+}
