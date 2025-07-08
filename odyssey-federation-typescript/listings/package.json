@@ -1,0 +1,26 @@
+{
+    "name": "listings",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "generate": "graphql-codegen --watch \"src/schema.graphql\"",
+        "dev": "concurrently \"tsx watch ./src/index.ts\" \"npm run generate --watch\""
+    },
+    "dependencies": {
+        "@apollo/datasource-rest": "^6.4.1",
+        "@apollo/server": "^4.12.2",
+        "@apollo/subgraph": "^2.11.2",
+        "graphql": "^16.11.0",
+        "graphql-tag": "^2.12.6"
+    },
+    "devDependencies": {
+        "@graphql-codegen/cli": "^5.0.7",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-resolvers": "^4.5.1",
+        "@parcel/watcher": "^2.5.1",
+        "@types/node": "^24.0.10",
+        "concurrently": "^9.2.0",
+        "tsx": "^4.20.3",
+        "typescript": "^5.8.3"
+    }
+}
